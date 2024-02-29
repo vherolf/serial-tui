@@ -1,5 +1,5 @@
-# serial-tui
-serial monitor tui with textual
+# serial-worker-tui
+A serial tui for reading and writing with textual
 
 
 ## serialtester
