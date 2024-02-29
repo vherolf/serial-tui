@@ -2,8 +2,8 @@
 serial monitor tui with textual
 
 
-## arduino tester
-serialtester is a simple ardunio sketch to test the serial connection
+## serialtester
+serialtester is a simple ardunio sketch to test/simulate the serial connection
 
 
 It sends every second a counter.

@@ -11,12 +11,13 @@ import serial
 import time
 
 class SerialApp(App):
-    """App to display the current weather."""
+    """Serial monitor App"""
     BINDINGS = [Binding(key="q", action="quit", description="Quit the app"),]
     CSS_PATH = "serial-worker-tui.tcss"
 
     device = '/dev/ttyACM0'
-    ser = serial.Serial(device, 115200)
+    baudrate = 115200
+    ser = serial.Serial(device, baudrate)
     sending = False
     
     def compose(self) -> ComposeResult:
@@ -45,12 +46,12 @@ class SerialApp(App):
     def serial_read(self) -> None:
         worker = get_current_worker()
         while True:
+            # this is for killing the worker
             if self.sending == True:
                 break
             if self.ser.in_waiting > 0:
                 self.incoming = self.ser.readline().decode("utf-8")
                 self.call_from_thread(self.query_one(RichLog).write, f"{self.incoming.strip()}")
-
 
     def on_worker_state_changed(self, event: Worker.StateChanged) -> None:
         """Called when the worker state changes."""
