@@ -7,19 +7,21 @@ from textual.worker import Worker, get_current_worker
 from textual.validation import Integer,Regex
 from textual.binding import Binding
 
+import queue
 import serial
 import time
+import datetime
 
-class SerialApp(App):
-    """Serial monitor App"""
+class SerialConsoleApp(App):
+    """A simple Serial Console App for sending and recaiving serial data"""
     BINDINGS = [Binding(key="q", action="quit", description="Quit the app"),]
-    CSS_PATH = "serial-worker-tui.tcss"
+    CSS_PATH = "serial-console-tui.tcss"
 
     device = '/dev/ttyACM0'
     baudrate = 115200
-    ser = serial.Serial(device, baudrate)
-    sending = False
-    
+    ser = serial.Serial(device, baudrate, timeout=0.1)
+    writeQueue = queue.Queue()
+
     def compose(self) -> ComposeResult:
         with Horizontal():
             #yield Input(placeholder=f"Send Serial on {self.device}", validators=[Integer(),Regex("[0123456789]*"),],validate_on=["submitted"])
@@ -36,27 +38,24 @@ class SerialApp(App):
         await self.serial_write(message.value)
         
     async def serial_write(self, data) -> None:
-            self.sending = True # kills the serial reader worker
-            data = data + '\n'
-            self.ser.write(data.encode())
-            self.sending = False
-            self.serial_read()
+        self.writeQueue.put(data)
 
     @work(exclusive=True, thread=True)
     def serial_read(self) -> None:
         worker = get_current_worker()
         while True:
-            # this is for killing the worker
-            if self.sending == True:
-                break
-            if self.ser.in_waiting > 0:
+            if self.ser.in_waiting > 0 and self.writeQueue.empty():
                 self.incoming = self.ser.readline().decode("utf-8")
-                self.call_from_thread(self.query_one(RichLog).write, f"{self.incoming.strip()}")
+                self.call_from_thread(self.query_one(RichLog).write,  f"{datetime.datetime.now().strftime('%H:%M:%S')} {self.incoming.strip()}")
+            elif self.writeQueue.qsize() > 0:
+                data = self.writeQueue.get()
+                data = data + '\n'
+                self.ser.write(data.encode())
 
     def on_worker_state_changed(self, event: Worker.StateChanged) -> None:
         """Called when the worker state changes."""
         self.log(event)
 
 if __name__ == "__main__":
-    app = SerialApp()
+    app = SerialConsoleApp()
     app.run()
