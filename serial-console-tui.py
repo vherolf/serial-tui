@@ -13,7 +13,7 @@ import time
 import datetime
 
 class SerialConsoleApp(App):
-    """A simple Serial Console App for sending and recaiving serial data"""
+    """A simple Serial Console App for sending and receiving serial data"""
     BINDINGS = [Binding(key="q", action="quit_serial_console", description="Quit App"),
                 Binding(key="c", action="clear_serial_console", description="Clear Console"),]
     CSS_PATH = "serial-console-tui.tcss"
