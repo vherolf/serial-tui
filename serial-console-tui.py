@@ -32,7 +32,7 @@ class SerialConsoleApp(App):
         yield Footer()
 
     async def on_mount(self) -> None:
-        self.serial_read()
+        self.serial_read_write()
         
     @on(Input.Submitted)
     async def input_changed(self, message: Input.Changed) -> None:
@@ -42,7 +42,7 @@ class SerialConsoleApp(App):
         self.writeQueue.put(data)
 
     @work(exclusive=True, thread=True)
-    def serial_read(self) -> None:
+    def serial_read_write(self) -> None:
         worker = get_current_worker()
         while True:
             if self.ser.in_waiting > 0 and self.writeQueue.empty():
