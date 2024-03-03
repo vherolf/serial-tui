@@ -6,7 +6,7 @@ int DELAY = 100;
 const int ledPin = LED_BUILTIN;
 int ledState = LOW;
 unsigned long previousMillis = 0;
-const long interval = 2000;
+const long interval = 1000;
 
 unsigned long counter = 0;
 

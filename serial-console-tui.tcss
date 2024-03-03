@@ -1,13 +1,8 @@
-#weather-container {
+#serial-container {
     width: 100%;
     height: 1fr;
     align: center middle;
     overflow: auto;
-}
-
-#weather {
-    width: auto;
-    height: auto;
 }
 
 Input.-valid {
@@ -18,10 +13,4 @@ Input.-valid:focus {
 }
 Input {
     margin: 1 1;
-}
-Label {
-    margin: 1 2;
-}
-Pretty {
-    margin: 1 2;
 }

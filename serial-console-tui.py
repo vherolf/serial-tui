@@ -14,12 +14,13 @@ import datetime
 
 class SerialConsoleApp(App):
     """A simple Serial Console App for sending and recaiving serial data"""
-    BINDINGS = [Binding(key="q", action="quit", description="Quit the app"),]
+    BINDINGS = [Binding(key="q", action="quit_serial_console", description="Quit App"),
+                Binding(key="c", action="clear_serial_console", description="Clear Console"),]
     CSS_PATH = "serial-console-tui.tcss"
 
     device = '/dev/ttyACM0'
     baudrate = 115200
-    ser = serial.Serial(device, baudrate, timeout=0.1)
+    ser = serial.Serial(device, baudrate, timeout=2)
     writeQueue = queue.Queue()
 
     def compose(self) -> ComposeResult:
@@ -55,6 +56,13 @@ class SerialConsoleApp(App):
     def on_worker_state_changed(self, event: Worker.StateChanged) -> None:
         """Called when the worker state changes."""
         self.log(event)
+
+    def action_clear_serial_console(self) -> None:
+        self.query_one(RichLog).clear()
+
+    def action_quit_serial_console(self) -> None:
+        self.ser.close()
+        self.app.exit()
 
 if __name__ == "__main__":
     app = SerialConsoleApp()
